@@ -1,0 +1,11 @@
+resolver: lts-19.2
+
+# This enables Haskell Language Server tooltips for external libraries.
+#ghc-options:
+#    "$everything": -haddock
+
+# Put documentation into an easily accessible directory.
+build:
+    haddock-arguments:
+        haddock-args:
+        - "--odir=./haddocks"

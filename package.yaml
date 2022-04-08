@@ -1,0 +1,50 @@
+name: lucid-math
+version: 0.1.0.0
+license: BSD2
+github: adelon/lucid-math
+synopsis: Extension of the lucid DSL to include MathML Core.
+description: Uses the same conventions as in lucid for MathML markup.
+category: Web
+
+extra-source-files:
+    - license.md
+    - readme.md
+
+dependencies:
+    - base < 5
+    - lucid
+    - text
+
+default-extensions:
+    - ApplicativeDo
+    - BlockArguments
+    - DeriveFunctor
+    - DeriveGeneric
+    - FlexibleContexts
+    - FlexibleInstances
+    - GADTs
+    - GeneralizedNewtypeDeriving
+    - ImportQualifiedPost
+    - InstanceSigs
+    - LambdaCase
+    - OverloadedStrings
+    - PartialTypeSignatures
+    - PatternSynonyms
+    - ScopedTypeVariables
+    - TypeFamilies
+    - TypeOperators
+
+
+library:
+    source-dirs: src/
+    ghc-options:
+        # Warnings
+        - -Wall
+        - -Wcompat
+        - -Wincomplete-uni-patterns
+        - -Wincomplete-record-updates
+        - -Wredundant-constraints
+        - -fno-warn-unused-do-bind
+        # Cleaning up GHC's error messages
+        - -freverse-errors
+        - -fhide-source-paths
