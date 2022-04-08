@@ -11,8 +11,6 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Lucid.Base
 import Lucid.Html5 as Export (height_, width_, rowspan_)
-import Data.Bifoldable (Bifoldable)
-import Data.Char (GeneralCategory(InitialQuote))
 
 -- * The top-level @math@ MathML element
 
