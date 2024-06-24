@@ -1,7 +1,7 @@
 # `lucid-math`
 
 DSL for [MathML Core](https://mathml-refresh.github.io/mathml-core/) in Haskell
-as an extension of the DSL [`lucid`](https://hackage.haskell.org/package/lucid) for HTML.
+as an extension of the DSL [`lucid2`](https://hackage.haskell.org/package/lucid) for HTML.
 
 
 ```haskell

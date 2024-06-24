@@ -1,0 +1,32 @@
+cabal-version: 1.12
+
+name:           lucid-math
+version:        0.1.0.0
+synopsis:       Extension of the lucid DSL to include MathML Core.
+description:    Uses the same conventions as in lucid for MathML markup.
+category:       Web
+homepage:       https://github.com/adelon/lucid-math#readme
+bug-reports:    https://github.com/adelon/lucid-math/issues
+license:        BSD2
+build-type:     Simple
+extra-source-files:
+    license.md
+    readme.md
+
+source-repository head
+  type: git
+  location: https://github.com/adelon/lucid-math
+
+library
+  exposed-modules:
+      Lucid.Math
+  other-modules:
+      Paths_lucid_math
+  hs-source-dirs:
+      src/
+  ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -fno-warn-unused-do-bind -freverse-errors -fhide-source-paths
+  build-depends:
+      base <5
+    , lucid2
+    , text
+  default-language: Haskell2010

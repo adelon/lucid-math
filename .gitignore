@@ -8,7 +8,6 @@
 .stack-work/
 .vscode/
 *.aux
-*.cabal
 *.chi
 *.chs.h
 *.dyn_hi

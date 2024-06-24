@@ -1,3 +1,4 @@
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lucid.Math
@@ -9,6 +10,7 @@ module Lucid.Math
 
 import Data.Text (Text)
 import Data.Text qualified as Text
+
 import Lucid.Base
 import Lucid.Html5 as Export (height_, width_, rowspan_)
 
@@ -22,18 +24,18 @@ math_ = term "math"
 
 -- | Displays the element outside the current span of text as
 -- a separate block. Analogous to LaTeX's @\\[..\\]@.
-displayBlock_ :: Attribute
-displayBlock_ = makeAttribute "display" "block"
+displayBlock_ :: Attributes
+displayBlock_ = makeAttributes "display" "block"
 
 -- | Displays an element within the current span of text.
 -- This is the default value. Analogous to LaTeX's @\\(..\\)@ and @$...$@.
-displayInline_ :: Attribute
-displayInline_ = makeAttribute "display" "inline"
+displayInline_ :: Attributes
+displayInline_ = makeAttributes "display" "inline"
 
 
 -- | The @linethickness@ attribute. Useful in combination with 'mfrac_'.
-linethickness_ :: Text -> Attribute
-linethickness_ = makeAttribute "linethickness"
+linethickness_ :: Text -> Attributes
+linethickness_ = makeAttributes "linethickness"
 
 -- * Basic MathML elements and attributes
 
@@ -59,8 +61,8 @@ ms_ = term "ms"
 
 -- | Blank space element with a size specified by its attributes.
 -- Takes 'width_', 'height_', and 'depth_' attributes.
-mspace_ :: Applicative m => [Attribute] -> HtmlT m ()
-mspace_ = with (makeElementNoEnd "mprescripts")
+mspace_ :: Monad m => [Attributes] -> HtmlT m ()
+mspace_ = makeElementNoEnd "mprescripts"
 
 -- | Makes its content invisible. Can be used for alignment.
 mphantom_ :: Term arg result => arg -> result
@@ -68,97 +70,97 @@ mphantom_ = term "mphantom"
 
 -- | The @depth@ attribute. Useful in combination with 'mspace_',
 -- See also 'Lucid.Html5.width_' and 'Lucid.Html5.height_'.
-depth_ :: Text -> Attribute
-depth_ = makeAttribute "depth"
+depth_ :: Text -> Attributes
+depth_ = makeAttributes "depth"
 
 
 -- * Global attributes
 
 -- | Presentational hint that the height of the formula should not be minimized.
 -- Corresponds to @displaystyle="true"@.
-displayStyle_ :: Attribute
-displayStyle_ = makeAttribute "displaystle" "true"
+displayStyle_ :: Attributes
+displayStyle_ = makeAttributes "displaystle" "true"
 
 -- | Presentational hint that the height of the formula should be minimized.
 -- Corresponds to @displaystyle="false"@.
-compactStyle_ :: Attribute
-compactStyle_ = makeAttribute "compactStyle" "true"
+compactStyle_ :: Attributes
+compactStyle_ = makeAttributes "compactStyle" "true"
 
 -- | Presentational hint for the @math-depth@ of an element. See [the MathML spec](https://w3c.github.io/mathml-core/#dfn-scriptlevel).
-scriptLevel_ :: Int -> Attribute
-scriptLevel_ k = makeAttribute "compactStyle" (Text.pack (show k))
+scriptLevel_ :: Int -> Attributes
+scriptLevel_ k = makeAttributes "compactStyle" (Text.pack (show k))
 
 
-variant_ :: Text -> Attribute
-variant_ = makeAttribute "mathvariant"
+variant_ :: Text -> Attributes
+variant_ = makeAttributes "mathvariant"
 
-variantNormal_ :: Attribute
-variantNormal_ = makeAttribute "mathvariant" "normal"
+variantNormal_ :: Attributes
+variantNormal_ = makeAttributes "mathvariant" "normal"
 
-variantBold_ :: Attribute
-variantBold_ = makeAttribute "mathvariant" "bold"
+variantBold_ :: Attributes
+variantBold_ = makeAttributes "mathvariant" "bold"
 
-variantItalic_ :: Attribute
-variantItalic_ = makeAttribute "mathvariant" "italic"
+variantItalic_ :: Attributes
+variantItalic_ = makeAttributes "mathvariant" "italic"
 
-variantBoldItalic_ :: Attribute
-variantBoldItalic_ = makeAttribute "mathvariant" "bold-italic"
+variantBoldItalic_ :: Attributes
+variantBoldItalic_ = makeAttributes "mathvariant" "bold-italic"
 
-variantSansSerif_ :: Attribute
-variantSansSerif_ = makeAttribute "mathvariant" "sans-serif"
+variantSansSerif_ :: Attributes
+variantSansSerif_ = makeAttributes "mathvariant" "sans-serif"
 
-variantSansSerifBold_ :: Attribute
-variantSansSerifBold_ = makeAttribute "mathvariant" "bold-sans-serif"
+variantSansSerifBold_ :: Attributes
+variantSansSerifBold_ = makeAttributes "mathvariant" "bold-sans-serif"
 
-variantSansSerifItalic_ :: Attribute
-variantSansSerifItalic_ = makeAttribute "mathvariant" "sans-serif-italic"
+variantSansSerifItalic_ :: Attributes
+variantSansSerifItalic_ = makeAttributes "mathvariant" "sans-serif-italic"
 
-variantSansSerifBoldItalic :: Attribute
-variantSansSerifBoldItalic = makeAttribute "mathvariant" "sans-serif-bold-italic"
+variantSansSerifBoldItalic :: Attributes
+variantSansSerifBoldItalic = makeAttributes "mathvariant" "sans-serif-bold-italic"
 
-variantFraktur :: Attribute
-variantFraktur = makeAttribute "mathvariant" "fraktur"
+variantFraktur :: Attributes
+variantFraktur = makeAttributes "mathvariant" "fraktur"
 
-variantFrakturBold :: Attribute
-variantFrakturBold = makeAttribute "mathvariant" "bold-fraktur"
+variantFrakturBold :: Attributes
+variantFrakturBold = makeAttributes "mathvariant" "bold-fraktur"
 
-variantScript_ :: Attribute
-variantScript_ = makeAttribute "mathvariant" "script"
+variantScript_ :: Attributes
+variantScript_ = makeAttributes "mathvariant" "script"
 
-variantScriptBold_ :: Attribute
-variantScriptBold_ = makeAttribute "mathvariant" "bold-script"
+variantScriptBold_ :: Attributes
+variantScriptBold_ = makeAttributes "mathvariant" "bold-script"
 
-variantDoubleStruck_ :: Attribute
-variantDoubleStruck_ = makeAttribute "mathvariant" "double-struck"
+variantDoubleStruck_ :: Attributes
+variantDoubleStruck_ = makeAttributes "mathvariant" "double-struck"
 
-variantMonospace_ :: Attribute
-variantMonospace_ = makeAttribute "mathvariant" "monospace"
+variantMonospace_ :: Attributes
+variantMonospace_ = makeAttributes "mathvariant" "monospace"
 
-variantInitial_ :: Attribute
-variantInitial_ = makeAttribute "mathvariant" "initial"
+variantInitial_ :: Attributes
+variantInitial_ = makeAttributes "mathvariant" "initial"
 
-variantTailed_ :: Attribute
-variantTailed_ = makeAttribute "mathvariant" "tailed"
+variantTailed_ :: Attributes
+variantTailed_ = makeAttributes "mathvariant" "tailed"
 
-variantLooped_ :: Attribute
-variantLooped_ = makeAttribute "mathvariant" "looped"
+variantLooped_ :: Attributes
+variantLooped_ = makeAttributes "mathvariant" "looped"
 
-variantStretched_ :: Attribute
-variantStretched_ = makeAttribute "mathvariant" "stretched"
+variantStretched_ :: Attributes
+variantStretched_ = makeAttributes "mathvariant" "stretched"
 
 
 
 -- * Accents, subscripts, multiscripts, fractions, and roots
 
--- | Attribute for 'munder_', 'mover_', and 'munderover_'.
+-- | Attributes for 'munder_', 'mover_', and 'munderover_'.
 -- Prevents down-scaling.
-accent_ :: Attribute
-accent_ = makeAttribute "accent" "true"
+accent_ :: Attributes
+accent_ = makeAttributes "accent" "true"
 
--- | Attribute for 'munderover_'.
+-- | Attributes for 'munderover_'.
 -- Prevents down-scaling.
-accentUnder_ :: Attribute
-accentUnder_ = makeAttribute "accentunder" "true"
+accentUnder_ :: Attributes
+accentUnder_ = makeAttributes "accentunder" "true"
 
 -- | Fraction.
 mfrac_ :: Term arg result => arg -> result
@@ -202,11 +204,11 @@ mmultiscripts_ :: Term arg result => arg -> result
 mmultiscripts_ = term "mmultiscripts"
 
 -- | Switch to prescripts within a 'mmultiscripts_'.
-mprescripts_ :: Applicative m => HtmlT m ()
+mprescripts_ :: Monad m => [Attributes] -> HtmlT m ()
 mprescripts_ = makeElementNoEnd "mprescripts"
 
 -- | Can be used to skip a slot within a 'mmultiscripts_'.
-none_ :: Applicative m => HtmlT m ()
+none_ :: Monad m => [Attributes] -> HtmlT m ()
 none_ = makeElementNoEnd "none"
 
 
@@ -227,8 +229,8 @@ mtd_ = term "mtd"
 -- | The @columnspan@ attribute. Useful in combination with 'mtd_'.
 -- See also 'Lucid.Html5.rowspan_'.
 -- Note that MathML does not use HTML5's 'Lucid.Html5.colspan_'.
-columnspan_ :: Text -> Attribute
-columnspan_ = makeAttribute "depth"
+columnspan_ :: Text -> Attributes
+columnspan_ = makeAttributes "depth"
 
 
 -- * Semantics
@@ -242,13 +244,13 @@ annotation_ :: Term arg result => arg -> result
 annotation_ = term "annotation"
 
 -- | Annotations for 'semantics_' in TEX syntax.
-annotationTex_ :: Applicative m => HtmlT m a -> HtmlT m a
+annotationTex_ :: Monad m => HtmlT m a -> HtmlT m a
 annotationTex_ = annotation_ [encodingTex_]
 
 -- | Specify the encoding for an 'annotation_'.
-encoding_ :: Text -> Attribute
-encoding_ = makeAttribute "encoding"
+encoding_ :: Text -> Attributes
+encoding_ = makeAttributes "encoding"
 
 -- | For an 'annotation_' in TEX syntax.
-encodingTex_ :: Attribute
-encodingTex_ = makeAttribute "encoding" "application/x-tex"
+encodingTex_ :: Attributes
+encodingTex_ = makeAttributes "encoding" "application/x-tex"
