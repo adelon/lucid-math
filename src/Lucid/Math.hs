@@ -11,6 +11,7 @@ import Data.Text (Text)
 
 import Lucid.Base
 import Lucid.Html5 as Export (a_, height_, href_, rowspan_, width_)
+import qualified GHC.TypeLits as variables
 
 
 -- * The top-level @math@ MathML element
@@ -72,51 +73,12 @@ intent_ = makeAttributes "intent"
 arg_ :: Text -> Attributes
 arg_ = makeAttributes "arg"
 
-data MathVariant
-    = Normal
-    | Bold
-    | Italic
-    | BoldItalic
-    | SansSerif
-    | SansSerifBold
-    | SansSerifItalic
-    | SansSerifBoldItalic
-    | Fraktur
-    | FrakturBold
-    | Script
-    | ScriptBold
-    | DoubleStruck
-    | Monospace
-    | Initial
-    | Tailed
-    | Looped
-    | Stretched
-    deriving (Eq, Show)
 
--- | Alias for 'variant_'.
-mathvariant_ :: MathVariant -> Attributes
-mathvariant_ variant = makeAttributes "mathvariant" variant'
-    where
-        variant' = case variant of
-            Normal -> "normal"
-            Bold -> "bold"
-            Italic -> "italic"
-            BoldItalic -> "bold-italic"
-            SansSerif -> "sans-serif"
-            SansSerifBold -> "bold-sans-serif"
-            SansSerifItalic -> "sans-serif-italic"
-            SansSerifBoldItalic -> "sans-serif-bold-italic"
-            Fraktur -> "fraktur"
-            FrakturBold -> "bold-fraktur"
-            Script -> "script"
-            ScriptBold -> "bold-script"
-            DoubleStruck -> "double-struck"
-            Monospace -> "monospace"
-            Initial -> "initial"
-            Tailed -> "tailed"
-            Looped -> "looped"
-            Stretched -> "stretched"
-
+-- | Math variant hint. This is a presentational hint that can be used to specify a particular font or style for an element.
+-- MathML core only allows '"normal"' as a valid value, which can be used to override the default italic style for variables.
+-- Other MathML implementations may handle more values. A more robust approach is to use a specific unicode code point to select the desired glyph.
+mathvariant_ :: Text -> Attributes
+mathvariant_ = makeAttributes "mathvariant"
 
 -- * Basic MathML elements and attributes
 
@@ -337,6 +299,10 @@ semantics_ = term "semantics"
 -- | Text annotations for 'semantics_'.
 annotation_ :: Term arg result => arg -> result
 annotation_ = term "annotation"
+
+-- | XML annotations for 'semantics_'.
+annotationXml_ :: Term arg result => arg -> result
+annotationXml_ = term "annotation-xml"
 
 encoding_ :: Text -> Attributes
 encoding_ = makeAttributes "encoding"
