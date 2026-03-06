@@ -11,7 +11,6 @@ import Data.Text (Text)
 
 import Lucid.Base
 import Lucid.Html5 as Export (a_, height_, href_, rowspan_, width_)
-import qualified GHC.TypeLits as variables
 
 
 -- * The top-level @math@ MathML element
@@ -247,12 +246,6 @@ mmultiscripts_ = term "mmultiscripts"
 -- | Switch to prescripts within a 'mmultiscripts_'.
 mprescripts_ :: Monad m => [Attributes] -> HtmlT m ()
 mprescripts_ = makeElementNoEnd "mprescripts"
-
--- | Legacy helper to skip a slot within a 'mmultiscripts_'.
--- This is not part of MathML Core, but it is harmless to expose.
-none_ :: Monad m => [Attributes] -> HtmlT m ()
-none_ = makeElementNoEnd "none"
-
 
 -- * Tables and matrices
 
