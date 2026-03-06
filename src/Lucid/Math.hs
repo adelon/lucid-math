@@ -1,6 +1,32 @@
 {-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | A small @lucid2@ DSL for the
+-- [MathML Core specification](https://w3c.github.io/mathml-core/).
+--
+-- Naming follows the usual Lucid convention:
+--
+-- * element constructors end in @_@, for example 'math_' or 'mfrac_'
+-- * attribute helpers also end in @_@, for example 'display_' or 'scriptlevel_'
+--
+-- The API mostly mirrors MathML attribute names directly. A few HTML helpers are
+-- re-exported from "Lucid.Html5" because MathML Core uses them unchanged:
+-- 'a_', 'href_', 'width_', 'height_', and 'rowspan_'.
+--
+-- The module aims to cover MathML Core as defined by the current W3C Editor's
+-- Draft. Some legacy MathML attributes are also exposed when MathML Core keeps
+-- them valid for compatibility, even if the Core spec does not define special
+-- behavior for them.
+--
+-- Example:
+--
+-- @
+-- example :: Html ()
+-- example = math_ [display_ "block"] do
+--     mfrac_ do
+--         mn_ "1"
+--         msup_ (mi_ "x" *> mn_ "2")
+-- @
 module Lucid.Math
     ( module Lucid.Math
     -- * Re-exports from "Lucid.Html5".
@@ -20,22 +46,22 @@ import Lucid.Html5 as Export (a_, height_, href_, rowspan_, width_)
 math_ :: Term arg result => arg -> result
 math_ = term "math"
 
--- | If "block", display the element outside the current span of text as
--- a separate block. Analogous to LaTeX's @\\[..\\]@.
+-- | Value of the top-level @display@ attribute on 'math_'.
+-- MathML Core uses @\"block\"@ and @\"inline\"@.
 display_ :: Text -> Attributes
 display_ = makeAttributes "display"
 
--- | Displays the element outside the current span of text as a separate block.
--- Analogous to LaTeX's @\\[..\\]@.
+-- | Shortcut for @display_ "block"@.
+-- Displays the formula outside the current span of text as a separate block.
 displayblock_ :: Attributes
 displayblock_ = display_ "block"
 
--- | Displays the element within the current span of text.
--- Analogous to LaTeX's @\\(..\\)@ and @$...$@.
+-- | Shortcut for @display_ "inline"@.
+-- Displays the formula within the current span of text.
 displayinline_ :: Attributes
 displayinline_ = display_ "inline"
 
--- | Text alternative for assistive technologies.
+-- | Text alternative for assistive technologies on the top-level 'math_'.
 alttext_ :: Text -> Attributes
 alttext_ = makeAttributes "alttext"
 
@@ -43,39 +69,50 @@ alttext_ = makeAttributes "alttext"
 -- * Global attributes
 
 
--- | This attribute indicates whether formulas should try to minimize the logical height (if 'False') or not (if 'True') e.g. by changing the size of content or the layout of scripts.
+-- | Presentational hint for whether a formula should use display style.
+-- In display style, layout generally uses larger operators and less compact
+-- script placement than inline style.
 displaystyle_ :: Bool -> Attributes
 displaystyle_ value = makeAttributes "displaystyle" (if value then "true" else "false")
 
 -- | Presentational hint for the @math-depth@ of an element. This accepts the
--- full MathML syntax, including relative values such as @+1@.
+-- full MathML syntax, including absolute values such as @\"0\"@ and relative
+-- values such as @\"+1\"@ or @\"-1\"@.
 scriptlevel_ :: Text -> Attributes
 scriptlevel_ = makeAttributes "scriptlevel"
 
--- | Math color hint.
+-- | Math color hint, usually a CSS color value.
 mathcolor_ :: Text -> Attributes
 mathcolor_ = makeAttributes "mathcolor"
 
--- | Math background hint.
+-- | Math background hint, usually a CSS color value.
 mathbackground_ :: Text -> Attributes
 mathbackground_ = makeAttributes "mathbackground"
 
 -- | Math size hint.
+-- Typical values are CSS-like lengths or percentages such as @\"1.2em\"@ or
+-- @\"90%\"@.
 mathsize_ :: Text -> Attributes
 mathsize_ = makeAttributes "mathsize"
 
--- | Semantic intent annotation reserved as valid by MathML Core.
+-- | Semantic intent annotation.
+-- MathML Core keeps this attribute valid, but does not define rendering
+-- behavior specific to it.
 intent_ :: Text -> Attributes
 intent_ = makeAttributes "intent"
 
--- | Semantic argument annotation reserved as valid by MathML Core.
+-- | Semantic argument annotation.
+-- MathML Core keeps this attribute valid, but does not define rendering
+-- behavior specific to it.
 arg_ :: Text -> Attributes
 arg_ = makeAttributes "arg"
 
 
--- | Math variant hint. This is a presentational hint that can be used to specify a particular font or style for an element.
--- MathML core only allows '"normal"' as a valid value, which can be used to override the default italic style for variables.
--- Other MathML implementations may handle more values. A more robust approach is to use a specific unicode code point to select the desired glyph.
+-- | Math variant hint.
+-- In MathML Core, only @mathvariant="normal"@ on 'mi_' has specified behavior;
+-- other values are legacy/full-MathML territory and may be ignored by Core
+-- renderers. For stylistic alphabets, using the intended Unicode character is
+-- usually the more robust choice.
 mathvariant_ :: Text -> Attributes
 mathvariant_ = makeAttributes "mathvariant"
 
@@ -142,13 +179,16 @@ voffset_ = makeAttributes "voffset"
 
 -- * Operator attributes
 
+-- | Classification of an operator as prefix, infix, or postfix.
 data OperatorForm
     = Prefix
     | Infix
     | Postfix
     deriving (Eq, Show)
 
--- | The @form@ attribute for operators.
+-- | The @form@ attribute for 'mo_'.
+-- This overrides whether an operator should be treated as prefix, infix, or
+-- postfix for spacing and dictionary lookup.
 form_ :: OperatorForm -> Attributes
 form_ form = makeAttributes "form" form'
     where
@@ -158,43 +198,50 @@ form_ form = makeAttributes "form" form'
             Postfix -> "postfix"
 
 
+-- | Whether an operator should be treated as a fence character.
 fence_ :: Bool -> Attributes
 fence_ value = makeAttributes "fence" (if value then "true" else "false")
 
+-- | Whether an operator should be treated as a separator.
 separator_ :: Bool -> Attributes
 separator_ value = makeAttributes "separator" (if value then "true" else "false")
 
+-- | Whether an operator may stretch to match the size of surrounding content.
 stretchy_ :: Bool -> Attributes
 stretchy_ value = makeAttributes "stretchy" (if value then "true" else "false")
 
+-- | Whether stretching should be symmetric around the math axis.
 symmetric_ :: Bool -> Attributes
 symmetric_ value = makeAttributes "symmetric" (if value then "true" else "false")
 
+-- | Whether an operator should use large-operator styling in display style.
 largeop_ :: Bool -> Attributes
 largeop_ value = makeAttributes "largeop" (if value then "true" else "false")
 
+-- | Whether limits may move beside the operator in more compact layouts.
 movablelimits_ :: Bool -> Attributes
 movablelimits_ value = makeAttributes "movablelimits" (if value then "true" else "false")
 
--- | Left and right operator spacing.
+-- | Right operator spacing. Values use MathML/CSS length syntax.
 rspace_ :: Text -> Attributes
 rspace_ = makeAttributes "rspace"
 
--- | Maximum stretched size.
+-- | Maximum stretched size for stretchable operators.
 maxsize_ :: Text -> Attributes
 maxsize_ = makeAttributes "maxsize"
 
--- | Minimum stretched size.
+-- | Minimum stretched size for stretchable operators.
 minsize_ :: Text -> Attributes
 minsize_ = makeAttributes "minsize"
 
 
 -- * Accents, subscripts, multiscripts, fractions, and roots
 
--- | Generic @accent@ attribute helper.
+-- | Whether the overscript or underscript should be treated as an accent.
 accent_ :: Bool -> Attributes
 accent_ value = makeAttributes "accent" (if value then "true" else "false")
 
+-- | Whether the underscript should be treated as an accent.
 accentunder_ :: Bool -> Attributes
 accentunder_ value = makeAttributes "accentunder" (if value then "true" else "false")
 
@@ -243,7 +290,9 @@ msubsup_ = term "msubsup"
 mmultiscripts_ :: Term arg result => arg -> result
 mmultiscripts_ = term "mmultiscripts"
 
--- | Switch to prescripts within a 'mmultiscripts_'.
+-- | Switch from postscripts to prescripts within 'mmultiscripts_'.
+-- A typical structure is base, post-sub/superscripts, then 'mprescripts_',
+-- then pre-sub/superscripts.
 mprescripts_ :: Monad m => [Attributes] -> HtmlT m ()
 mprescripts_ = makeElementNoEnd "mprescripts"
 
@@ -274,11 +323,15 @@ columnspan_ = makeAttributes "columnspan"
 maction_ :: Term arg result => arg -> result
 maction_ = term "maction"
 
--- | The legacy @actiontype@ attribute for 'maction_'.
+-- | Legacy @actiontype@ attribute for 'maction_'.
+-- MathML Core keeps it valid for compatibility, but does not define interactive
+-- behavior for specific values.
 actiontype_ :: Text -> Attributes
 actiontype_ = makeAttributes "actiontype"
 
--- | The legacy @selection@ attribute for 'maction_'.
+-- | Legacy @selection@ attribute for 'maction_'.
+-- MathML Core keeps it valid for compatibility, but does not define interactive
+-- behavior specific to it.
 selection_ :: Text -> Attributes
 selection_ = makeAttributes "selection"
 
@@ -286,16 +339,20 @@ selection_ = makeAttributes "selection"
 -- * Semantics
 
 -- | Associate annotations with a MathML expression.
+-- This is typically used with 'annotation_' or 'annotationXml_' plus an
+-- 'encoding_' attribute describing the annotation format.
 semantics_ :: Term arg result => arg -> result
 semantics_ = term "semantics"
 
--- | Text annotations for 'semantics_'.
+-- | Text annotation child of 'semantics_'.
 annotation_ :: Term arg result => arg -> result
 annotation_ = term "annotation"
 
--- | XML annotations for 'semantics_'.
+-- | XML annotation child of 'semantics_'.
 annotationXml_ :: Term arg result => arg -> result
 annotationXml_ = term "annotation-xml"
 
+-- | Encoding label for 'annotation_' and 'annotationXml_'.
+-- Typical values are MIME-like strings such as @\"application/x-tex\"@.
 encoding_ :: Text -> Attributes
 encoding_ = makeAttributes "encoding"
