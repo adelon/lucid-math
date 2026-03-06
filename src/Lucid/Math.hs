@@ -7,41 +7,126 @@ module Lucid.Math
     , module Export
     ) where
 
-
 import Data.Text (Text)
-import Data.Text qualified as Text
 
 import Lucid.Base
-import Lucid.Html5 as Export (height_, width_, rowspan_)
+import Lucid.Html5 as Export (a_, height_, href_, rowspan_, width_)
+
 
 -- * The top-level @math@ MathML element
 
--- | Top-level element for MathML content. All
--- mathematical content must be wrapped by this element.
--- There should not be a nested 'math_' within this element.
+-- | Top-level element for MathML content. All mathematical content must be
+-- wrapped by this element. There should not be a nested 'math_' within it.
 math_ :: Term arg result => arg -> result
 math_ = term "math"
 
--- | Displays the element outside the current span of text as
+-- | If "block", display the element outside the current span of text as
 -- a separate block. Analogous to LaTeX's @\\[..\\]@.
-displayBlock_ :: Attributes
-displayBlock_ = makeAttributes "display" "block"
+display_ :: Text -> Attributes
+display_ = makeAttributes "display"
 
--- | Displays an element within the current span of text.
--- This is the default value. Analogous to LaTeX's @\\(..\\)@ and @$...$@.
-displayInline_ :: Attributes
-displayInline_ = makeAttributes "display" "inline"
+-- | Displays the element outside the current span of text as a separate block.
+-- Analogous to LaTeX's @\\[..\\]@.
+displayblock_ :: Attributes
+displayblock_ = display_ "block"
+
+-- | Displays the element within the current span of text.
+-- Analogous to LaTeX's @\\(..\\)@ and @$...$@.
+displayinline_ :: Attributes
+displayinline_ = display_ "inline"
+
+-- | Text alternative for assistive technologies.
+alttext_ :: Text -> Attributes
+alttext_ = makeAttributes "alttext"
 
 
--- | The @linethickness@ attribute. Useful in combination with 'mfrac_'.
-linethickness_ :: Text -> Attributes
-linethickness_ = makeAttributes "linethickness"
+-- * Global attributes
+
+
+-- | This attribute indicates whether formulas should try to minimize the logical height (if 'False') or not (if 'True') e.g. by changing the size of content or the layout of scripts.
+displaystyle_ :: Bool -> Attributes
+displaystyle_ value = makeAttributes "displaystyle" (if value then "true" else "false")
+
+-- | Presentational hint for the @math-depth@ of an element. This accepts the
+-- full MathML syntax, including relative values such as @+1@.
+scriptlevel_ :: Text -> Attributes
+scriptlevel_ = makeAttributes "scriptlevel"
+
+-- | Math color hint.
+mathcolor_ :: Text -> Attributes
+mathcolor_ = makeAttributes "mathcolor"
+
+-- | Math background hint.
+mathbackground_ :: Text -> Attributes
+mathbackground_ = makeAttributes "mathbackground"
+
+-- | Math size hint.
+mathsize_ :: Text -> Attributes
+mathsize_ = makeAttributes "mathsize"
+
+-- | Semantic intent annotation reserved as valid by MathML Core.
+intent_ :: Text -> Attributes
+intent_ = makeAttributes "intent"
+
+-- | Semantic argument annotation reserved as valid by MathML Core.
+arg_ :: Text -> Attributes
+arg_ = makeAttributes "arg"
+
+data MathVariant
+    = Normal
+    | Bold
+    | Italic
+    | BoldItalic
+    | SansSerif
+    | SansSerifBold
+    | SansSerifItalic
+    | SansSerifBoldItalic
+    | Fraktur
+    | FrakturBold
+    | Script
+    | ScriptBold
+    | DoubleStruck
+    | Monospace
+    | Initial
+    | Tailed
+    | Looped
+    | Stretched
+    deriving (Eq, Show)
+
+-- | Alias for 'variant_'.
+mathvariant_ :: MathVariant -> Attributes
+mathvariant_ variant = makeAttributes "mathvariant" variant'
+    where
+        variant' = case variant of
+            Normal -> "normal"
+            Bold -> "bold"
+            Italic -> "italic"
+            BoldItalic -> "bold-italic"
+            SansSerif -> "sans-serif"
+            SansSerifBold -> "bold-sans-serif"
+            SansSerifItalic -> "sans-serif-italic"
+            SansSerifBoldItalic -> "sans-serif-bold-italic"
+            Fraktur -> "fraktur"
+            FrakturBold -> "bold-fraktur"
+            Script -> "script"
+            ScriptBold -> "bold-script"
+            DoubleStruck -> "double-struck"
+            Monospace -> "monospace"
+            Initial -> "initial"
+            Tailed -> "tailed"
+            Looped -> "looped"
+            Stretched -> "stretched"
+
 
 -- * Basic MathML elements and attributes
 
 -- | Group elements.
 mrow_ :: Term arg result => arg -> result
 mrow_ = term "mrow"
+
+-- | Text embedded in MathML.
+mtext_ :: Term arg result => arg -> result
+mtext_ = term "mtext"
 
 -- | Math identifier.
 mi_ :: Term arg result => arg -> result
@@ -59,112 +144,106 @@ mn_ = term "mn"
 ms_ :: Term arg result => arg -> result
 ms_ = term "ms"
 
--- | Blank space element with a size specified by its attributes.
--- Takes 'width_', 'height_', and 'depth_' attributes.
+-- | Blank space element with a size specified by its attributes. Takes
+-- 'width_', 'height_', and 'depth_' attributes.
 mspace_ :: Monad m => [Attributes] -> HtmlT m ()
-mspace_ = makeElementNoEnd "mprescripts"
+mspace_ = makeElementNoEnd "mspace"
 
 -- | Makes its content invisible. Can be used for alignment.
 mphantom_ :: Term arg result => arg -> result
 mphantom_ = term "mphantom"
 
--- | The @depth@ attribute. Useful in combination with 'mspace_',
+-- | Style change container.
+mstyle_ :: Term arg result => arg -> result
+mstyle_ = term "mstyle"
+
+-- | Error message box.
+merror_ :: Term arg result => arg -> result
+merror_ = term "merror"
+
+-- | Adjust the size and position of its contents.
+mpadded_ :: Term arg result => arg -> result
+mpadded_ = term "mpadded"
+
+-- | The @depth@ attribute. Useful in combination with 'mspace_' and 'mpadded_'.
 -- See also 'Lucid.Html5.width_' and 'Lucid.Html5.height_'.
 depth_ :: Text -> Attributes
 depth_ = makeAttributes "depth"
 
+-- | Horizontal offset. Useful in combination with 'mpadded_'.
+lspace_ :: Text -> Attributes
+lspace_ = makeAttributes "lspace"
 
--- * Global attributes
-
--- | Presentational hint that the height of the formula should not be minimized.
--- Corresponds to @displaystyle="true"@.
-displayStyle_ :: Attributes
-displayStyle_ = makeAttributes "displaystle" "true"
-
--- | Presentational hint that the height of the formula should be minimized.
--- Corresponds to @displaystyle="false"@.
-compactStyle_ :: Attributes
-compactStyle_ = makeAttributes "compactStyle" "true"
-
--- | Presentational hint for the @math-depth@ of an element. See [the MathML spec](https://w3c.github.io/mathml-core/#dfn-scriptlevel).
-scriptLevel_ :: Int -> Attributes
-scriptLevel_ k = makeAttributes "compactStyle" (Text.pack (show k))
+-- | Vertical offset. Useful in combination with 'mpadded_'.
+voffset_ :: Text -> Attributes
+voffset_ = makeAttributes "voffset"
 
 
-variant_ :: Text -> Attributes
-variant_ = makeAttributes "mathvariant"
+-- * Operator attributes
 
-variantNormal_ :: Attributes
-variantNormal_ = makeAttributes "mathvariant" "normal"
+data OperatorForm
+    = Prefix
+    | Infix
+    | Postfix
+    deriving (Eq, Show)
 
-variantBold_ :: Attributes
-variantBold_ = makeAttributes "mathvariant" "bold"
+-- | The @form@ attribute for operators.
+form_ :: OperatorForm -> Attributes
+form_ form = makeAttributes "form" form'
+    where
+        form' = case form of
+            Prefix -> "prefix"
+            Infix -> "infix"
+            Postfix -> "postfix"
 
-variantItalic_ :: Attributes
-variantItalic_ = makeAttributes "mathvariant" "italic"
 
-variantBoldItalic_ :: Attributes
-variantBoldItalic_ = makeAttributes "mathvariant" "bold-italic"
+fence_ :: Bool -> Attributes
+fence_ value = makeAttributes "fence" (if value then "true" else "false")
 
-variantSansSerif_ :: Attributes
-variantSansSerif_ = makeAttributes "mathvariant" "sans-serif"
+separator_ :: Bool -> Attributes
+separator_ value = makeAttributes "separator" (if value then "true" else "false")
 
-variantSansSerifBold_ :: Attributes
-variantSansSerifBold_ = makeAttributes "mathvariant" "bold-sans-serif"
+stretchy_ :: Bool -> Attributes
+stretchy_ value = makeAttributes "stretchy" (if value then "true" else "false")
 
-variantSansSerifItalic_ :: Attributes
-variantSansSerifItalic_ = makeAttributes "mathvariant" "sans-serif-italic"
+symmetric_ :: Bool -> Attributes
+symmetric_ value = makeAttributes "symmetric" (if value then "true" else "false")
 
-variantSansSerifBoldItalic :: Attributes
-variantSansSerifBoldItalic = makeAttributes "mathvariant" "sans-serif-bold-italic"
+largeop_ :: Bool -> Attributes
+largeop_ value = makeAttributes "largeop" (if value then "true" else "false")
 
-variantFraktur :: Attributes
-variantFraktur = makeAttributes "mathvariant" "fraktur"
+movablelimits_ :: Bool -> Attributes
+movablelimits_ value = makeAttributes "movablelimits" (if value then "true" else "false")
 
-variantFrakturBold :: Attributes
-variantFrakturBold = makeAttributes "mathvariant" "bold-fraktur"
+-- | Left and right operator spacing.
+rspace_ :: Text -> Attributes
+rspace_ = makeAttributes "rspace"
 
-variantScript_ :: Attributes
-variantScript_ = makeAttributes "mathvariant" "script"
+-- | Maximum stretched size.
+maxsize_ :: Text -> Attributes
+maxsize_ = makeAttributes "maxsize"
 
-variantScriptBold_ :: Attributes
-variantScriptBold_ = makeAttributes "mathvariant" "bold-script"
-
-variantDoubleStruck_ :: Attributes
-variantDoubleStruck_ = makeAttributes "mathvariant" "double-struck"
-
-variantMonospace_ :: Attributes
-variantMonospace_ = makeAttributes "mathvariant" "monospace"
-
-variantInitial_ :: Attributes
-variantInitial_ = makeAttributes "mathvariant" "initial"
-
-variantTailed_ :: Attributes
-variantTailed_ = makeAttributes "mathvariant" "tailed"
-
-variantLooped_ :: Attributes
-variantLooped_ = makeAttributes "mathvariant" "looped"
-
-variantStretched_ :: Attributes
-variantStretched_ = makeAttributes "mathvariant" "stretched"
-
+-- | Minimum stretched size.
+minsize_ :: Text -> Attributes
+minsize_ = makeAttributes "minsize"
 
 
 -- * Accents, subscripts, multiscripts, fractions, and roots
 
--- | Attributes for 'munder_', 'mover_', and 'munderover_'.
--- Prevents down-scaling.
-accent_ :: Attributes
-accent_ = makeAttributes "accent" "true"
+-- | Generic @accent@ attribute helper.
+accent_ :: Bool -> Attributes
+accent_ value = makeAttributes "accent" (if value then "true" else "false")
 
--- | Attributes for 'munderover_'.
--- Prevents down-scaling.
-accentUnder_ :: Attributes
-accentUnder_ = makeAttributes "accentunder" "true"
+accentunder_ :: Bool -> Attributes
+accentunder_ value = makeAttributes "accentunder" (if value then "true" else "false")
 
 -- | Fraction.
 mfrac_ :: Term arg result => arg -> result
 mfrac_ = term "mfrac"
+
+-- | The @linethickness@ attribute. Useful in combination with 'mfrac_'.
+linethickness_ :: Text -> Attributes
+linethickness_ = makeAttributes "linethickness"
 
 -- | Square root. For other radicals see 'mroot_'.
 msqrt_ :: Term arg result => arg -> result
@@ -207,7 +286,8 @@ mmultiscripts_ = term "mmultiscripts"
 mprescripts_ :: Monad m => [Attributes] -> HtmlT m ()
 mprescripts_ = makeElementNoEnd "mprescripts"
 
--- | Can be used to skip a slot within a 'mmultiscripts_'.
+-- | Legacy helper to skip a slot within a 'mmultiscripts_'.
+-- This is not part of MathML Core, but it is harmless to expose.
 none_ :: Monad m => [Attributes] -> HtmlT m ()
 none_ = makeElementNoEnd "none"
 
@@ -228,9 +308,24 @@ mtd_ = term "mtd"
 
 -- | The @columnspan@ attribute. Useful in combination with 'mtd_'.
 -- See also 'Lucid.Html5.rowspan_'.
--- Note that MathML does not use HTML5's 'Lucid.Html5.colspan_'.
+-- Note that MathML does not use HTML5's @colspan@.
 columnspan_ :: Text -> Attributes
-columnspan_ = makeAttributes "depth"
+columnspan_ = makeAttributes "columnspan"
+
+
+-- * Linking and actions
+
+-- | Interactive action container.
+maction_ :: Term arg result => arg -> result
+maction_ = term "maction"
+
+-- | The legacy @actiontype@ attribute for 'maction_'.
+actiontype_ :: Text -> Attributes
+actiontype_ = makeAttributes "actiontype"
+
+-- | The legacy @selection@ attribute for 'maction_'.
+selection_ :: Text -> Attributes
+selection_ = makeAttributes "selection"
 
 
 -- * Semantics
@@ -243,14 +338,5 @@ semantics_ = term "semantics"
 annotation_ :: Term arg result => arg -> result
 annotation_ = term "annotation"
 
--- | Annotations for 'semantics_' in TEX syntax.
-annotationTex_ :: Monad m => HtmlT m a -> HtmlT m a
-annotationTex_ = annotation_ [encodingTex_]
-
--- | Specify the encoding for an 'annotation_'.
 encoding_ :: Text -> Attributes
 encoding_ = makeAttributes "encoding"
-
--- | For an 'annotation_' in TEX syntax.
-encodingTex_ :: Attributes
-encodingTex_ = makeAttributes "encoding" "application/x-tex"
