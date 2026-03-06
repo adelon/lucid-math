@@ -1,12 +1,12 @@
 # `lucid-math`
 
-DSL for [MathML Core](https://mathml-refresh.github.io/mathml-core/) in Haskell
+DSL for [MathML Core](https://w3c.github.io/mathml-core/) in Haskell
 as an extension of the DSL [`lucid2`](https://hackage.haskell.org/package/lucid) for HTML.
 
 
 ```haskell
 exampleFromCoreSpec :: Html ()
-exampleFromCoreSpec = math_ [displayBlock_] do
+exampleFromCoreSpec = math_ [display_ "block"] do
     mrow_ do
         munderover_ do
             mo_ "∑"
