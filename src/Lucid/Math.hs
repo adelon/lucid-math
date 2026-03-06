@@ -1,5 +1,7 @@
 {-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 -- | A small @lucid2@ DSL for the
 -- [MathML Core specification](https://w3c.github.io/mathml-core/).
@@ -33,7 +35,9 @@ module Lucid.Math
     , module Export
     ) where
 
+import Data.Bool (Bool)
 import Data.Text (Text)
+import Control.Monad (Monad)
 
 import Lucid.Base
 import Lucid.Html5 as Export (a_, height_, href_, rowspan_, width_)
@@ -180,23 +184,22 @@ voffset_ = makeAttributes "voffset"
 -- * Operator attributes
 
 -- | Classification of an operator as prefix, infix, or postfix.
-data OperatorForm
-    = Prefix
-    | Infix
-    | Postfix
-    deriving (Eq, Show)
+newtype OperatorForm = OperatorForm Text
+
+pattern Prefix :: OperatorForm
+pattern Prefix = OperatorForm "prefix"
+
+pattern Infix :: OperatorForm
+pattern Infix = OperatorForm "infix"
+
+pattern Postfix :: OperatorForm
+pattern Postfix = OperatorForm "postfix"
 
 -- | The @form@ attribute for 'mo_'.
 -- This overrides whether an operator should be treated as prefix, infix, or
 -- postfix for spacing and dictionary lookup.
 form_ :: OperatorForm -> Attributes
-form_ form = makeAttributes "form" form'
-    where
-        form' = case form of
-            Prefix -> "prefix"
-            Infix -> "infix"
-            Postfix -> "postfix"
-
+form_ (OperatorForm form) = makeAttributes "form" form
 
 -- | Whether an operator should be treated as a fence character.
 fence_ :: Bool -> Attributes
