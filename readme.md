@@ -1,4 +1,4 @@
-# `Lucid MathML Core`
+# Lucid MathML
 
 Domain-specific language for [MathML Core](https://w3c.github.io/mathml-core/) embedded in Haskell
 as an extension of [Lucid](https://hackage.haskell.org/package/lucid2), a library for HTML.
