@@ -1,7 +1,7 @@
-# `lucid-math`
+# `Lucid MathML Core`
 
-DSL for [MathML Core](https://w3c.github.io/mathml-core/) in Haskell
-as an extension of the DSL [`lucid2`](https://hackage.haskell.org/package/lucid) for HTML.
+Domain-specific language for [MathML Core](https://w3c.github.io/mathml-core/) embedded in Haskell
+as an extension of [Lucid](https://hackage.haskell.org/package/lucid2), a library for HTML.
 
 
 ```haskell
